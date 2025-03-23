@@ -1,5 +1,13 @@
 "use client";
-
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   ColumnDef,
   flexRender,
@@ -9,27 +17,15 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { CalendarDays, EllipsisVertical } from "lucide-react";
 import { useState } from "react";
-import { DataTablePagination } from "@/app/common/tanstack-table/DataTablePagination";
-import { DataTableViewOptions } from "@/app/common/tanstack-table/DataTableViewOptions";
-import { ChevronDown, FileInput, LayoutPanelTop, Search } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function EmployeeTable<TData, TValue>({
+export default function LeaveRequestTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -48,27 +44,18 @@ export function EmployeeTable<TData, TValue>({
       rowSelection,
     },
   });
-
   return (
-    <div className="border rounded-lg">
-      <div className="flex-default p-4">
+    <div className="border rounded-lg h-96 overflow-y-auto relative">
+      <div className="flex-default px-4 py-2">
         <div className="flex items-center gap-2">
-          <div className="relative ">
-            <input
-              type="text"
-              placeholder="Search Employee..."
-              className="pl-8 pr-4 py-3 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 w-full md:w-96 max-h-10"
-            />
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+          <div className="flex items-center gap-2">
+            <CalendarDays size={20} />
+            Leave Requests
           </div>
-          <Button variant={"outline"}>
-            <LayoutPanelTop /> Department <ChevronDown />
-          </Button>
-          <DataTableViewOptions table={table} />
         </div>
         <div>
-          <Button variant={"outline"}>
-            <FileInput /> Import
+          <Button variant={"ghost"} size={"icon"}>
+            <EllipsisVertical />
           </Button>
         </div>
       </div>
@@ -77,7 +64,7 @@ export function EmployeeTable<TData, TValue>({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-muted">
+              <TableRow key={headerGroup.id} className="bg-muted sticky top-0">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -123,7 +110,6 @@ export function EmployeeTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} className="border-t" />
     </div>
   );
 }

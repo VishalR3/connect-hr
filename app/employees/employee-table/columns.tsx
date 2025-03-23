@@ -15,8 +15,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/common/tanstack-table/DataTableColumnHeader";
 import dayjs from "dayjs";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type Employee = {
   id: string;
   employeeId: string;
@@ -31,7 +29,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <div className="ps-2">
+      <div className="ps-2 py-4">
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||

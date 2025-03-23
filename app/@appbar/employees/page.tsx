@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Bell, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
 export default function EmployeesAppBar() {
   return (
