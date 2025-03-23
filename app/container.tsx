@@ -10,25 +10,25 @@ import { Bell } from "lucide-react";
 
 export default function Container({
   children,
-  appbar,
+  appBar,
 }: {
   children: React.ReactNode;
-  appbar: React.ReactNode;
+  appBar: React.ReactNode;
 }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <Main appbar={appbar}>{children}</Main>
+      <Main appBar={appBar}>{children}</Main>
     </SidebarProvider>
   );
 }
 
 const Main = ({
   children,
-  appbar,
+  appBar,
 }: {
   children: React.ReactNode;
-  appbar: React.ReactNode;
+  appBar: React.ReactNode;
 }) => {
   const { state } = useSidebar();
   return (
@@ -39,7 +39,7 @@ const Main = ({
             <SidebarTrigger />
           </div>
         )}
-        <div className="flex-1 flex items-center justify-between">{appbar}</div>
+        <div className="flex-1 flex items-center justify-between">{appBar}</div>
         <div>
           <Button variant={"outline"} size={"icon"}>
             <Bell />

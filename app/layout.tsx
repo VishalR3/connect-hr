@@ -20,17 +20,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  appbar,
+  appBar,
 }: Readonly<{
   children: React.ReactNode;
-  appbar: React.ReactNode;
+  appBar: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Container appbar={appbar}>{children}</Container>
+        <Container appBar={appBar}>{children}</Container>
       </body>
     </html>
   );
