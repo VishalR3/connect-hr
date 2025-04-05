@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id              Int               @id @default(autoincrement())
+  name            String
+  email           String            @unique
+  position        String
+  department      String
+  joinDate        DateTime
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  payrollRecords  PayrollRecord[]
+  attendance      AttendanceRecord[]
+  leaveRequests   LeaveRequest[]
+}
+
+model PayrollRecord {
+  id          Int           @id @default(autoincrement())
+  employeeId  Int
+  employee    Employee      @relation(fields: [employeeId], references: [id])
+  salary      Float
+  bonus       Float?
+  deductions  Float?
+  status      PayrollStatus @default(pending)
+  paymentDate DateTime
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model AttendanceRecord {
+  id        Int              @id @default(autoincrement())
+  employeeId Int
+  employee  Employee         @relation(fields: [employeeId], references: [id])
+  checkIn   DateTime
+  checkOut  DateTime?
+  status    AttendanceStatus @default(present)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model LeaveRequest {
+  id         Int         @id @default(autoincrement())
+  employeeId Int
+  employee   Employee    @relation(fields: [employeeId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  type       LeaveType
+  status     LeaveStatus @default(pending)
+  reason     String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Settings {
+  id                Int     @id @default(1)
+  companyName       String
+  companyAddress    String
+  companyContact    String
+  companyTaxId      String
+  payrollCurrency   String  @default("USD")
+  payrollPayday     Int     @default(15)
+  payrollOvertimeRate Float @default(1.5)
+  leaveAnnualDays   Int     @default(20)
+  leaveSickDays     Int     @default(10)
+  leaveCarryForward Boolean @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+enum PayrollStatus {
+  pending
+  paid
+  failed
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  half_day
+}
+
+enum LeaveType {
+  annual
+  sick
+  maternity
+  paternity
+  unpaid
+  personal
+}
+
+enum LeaveStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}

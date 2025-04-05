@@ -1,53 +1,89 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-// Temporary in-memory storage (replace with database later)
-const employees = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    position: "Software Engineer",
-    department: "Engineering",
-    joinDate: "2023-01-01",
-  },
-];
-
 export async function GET() {
-  return NextResponse.json(employees);
+  try {
+    const employees = await prisma.employee.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json(employees);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: `Failed to fetch employees: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const newEmployee = {
-    id: employees.length + 1,
-    ...body,
-  };
-  employees.push(newEmployee);
-  return NextResponse.json(newEmployee, { status: 201 });
+  try {
+    const body = await request.json();
+    const employee = await prisma.employee.create({
+      data: {
+        name: body.name,
+        email: body.email,
+        position: body.position,
+        department: body.department,
+        joinDate: new Date(body.joinDate),
+      },
+    });
+    return NextResponse.json(employee, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: `Failed to create employee: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(request: Request) {
-  const body = await request.json();
-  const { id, ...data } = body;
-
-  const index = employees.findIndex((emp) => emp.id === id);
-  if (index === -1) {
-    return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+  try {
+    const { id, ...data } = await request.json();
+    const employee = await prisma.employee.update({
+      where: { id },
+      data: {
+        ...data,
+        joinDate: data.joinDate ? new Date(data.joinDate) : undefined,
+      },
+    });
+    return NextResponse.json(employee);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: `Failed to update employee: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      },
+      { status: 500 }
+    );
   }
-
-  employees[index] = { ...employees[index], ...data };
-  return NextResponse.json(employees[index]);
 }
 
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = parseInt(searchParams.get("id") || "0");
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get("id") || "0");
 
-  const index = employees.findIndex((emp) => emp.id === id);
-  if (index === -1) {
-    return NextResponse.json({ error: "Employee not found" }, { status: 404 });
+    await prisma.employee.delete({
+      where: { id },
+    });
+    return NextResponse.json({ message: "Employee deleted successfully" });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: `Failed to delete employee: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      },
+      { status: 500 }
+    );
   }
-
-  employees.splice(index, 1);
-  return NextResponse.json({ message: "Employee deleted successfully" });
 }

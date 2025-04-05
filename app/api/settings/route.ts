@@ -1,44 +1,39 @@
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-// Temporary in-memory storage (replace with database later)
-const settings = {
-  company: {
-    name: "Connect HR",
-    address: "123 Business St, City, Country",
-    contact: "contact@connecthr.com",
-    taxId: "TAX123456",
-  },
-  payroll: {
-    currency: "USD",
-    payday: 15,
-    overtimeRate: 1.5,
-  },
-  leave: {
-    annualLeaveDays: 20,
-    sickLeaveDays: 10,
-    carryForward: true,
-  },
-};
-
 export async function GET() {
-  return NextResponse.json(settings);
+  try {
+    const settings = await prisma.settings.findFirst();
+    return NextResponse.json(settings || {});
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: `Failed to fetch settings: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(request: Request) {
-  const body = await request.json();
-  const { section, data } = body;
-
-  if (!settings[section as keyof typeof settings]) {
+  try {
+    const data = await request.json();
+    const settings = await prisma.settings.upsert({
+      where: { id: 1 },
+      update: data,
+      create: data,
+    });
+    return NextResponse.json(settings);
+  } catch (error) {
     return NextResponse.json(
-      { error: "Invalid settings section" },
-      { status: 400 }
+      {
+        error: `Failed to update settings: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      },
+      { status: 500 }
     );
   }
-
-  settings[section as keyof typeof settings] = {
-    ...settings[section as keyof typeof settings],
-    ...data,
-  };
-
-  return NextResponse.json(settings[section as keyof typeof settings]);
 }
