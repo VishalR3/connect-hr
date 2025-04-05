@@ -7,6 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import { EmployeeTableContainer } from "./employee-table-container";
+import Link from "next/link";
 
 export default function EmployeesPage() {
   const stats = [
@@ -35,9 +36,11 @@ export default function EmployeesPage() {
             <Button variant={"outline"}>
               <FileOutput /> Export
             </Button>
-            <Button>
-              <Plus /> New Employee
-            </Button>
+            <Link href="/employees/new">
+              <Button>
+                <Plus /> New Employee
+              </Button>
+            </Link>
           </div>
         </div>
         <div className="flex items-center gap-4">

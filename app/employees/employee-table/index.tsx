@@ -22,7 +22,15 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DataTablePagination } from "@/app/common/tanstack-table/DataTablePagination";
 import { DataTableViewOptions } from "@/app/common/tanstack-table/DataTableViewOptions";
-import { ChevronDown, FileInput, LayoutPanelTop, Search } from "lucide-react";
+import {
+  ChevronDown,
+  FileInput,
+  LayoutPanelTop,
+  Search,
+  Users,
+  Plus,
+} from "lucide-react";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -112,11 +120,26 @@ export function EmployeeTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
+                <TableCell colSpan={columns.length} className="h-96">
+                  <div className="flex flex-col items-center justify-center gap-4 h-full">
+                    <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center">
+                      <Users className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <div className="text-center space-y-2">
+                      <h3 className="text-lg font-medium">
+                        No employees found
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Get started by adding your first employee
+                      </p>
+                    </div>
+                    <Link href="/employees/new">
+                      <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Employee
+                      </Button>
+                    </Link>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

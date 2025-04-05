@@ -1,19 +1,21 @@
-import { columns, Employee } from "./employee-table/columns";
+import { columns } from "./employee-table/columns";
 import { EmployeeTable } from "./employee-table";
-import { faker } from "@faker-js/faker";
+import { prisma } from "@/lib/prisma";
 
-const payments: Employee[] = Array(50)
-  .fill(0)
-  .map(() => ({
-    id: faker.database.mongodbObjectId(),
-    employeeId: "FM" + faker.number.int({ min: 100, max: 999 }),
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    department: faker.company.buzzNoun(),
-    jobTitle: faker.person.jobTitle(),
-    joiningDate: faker.date.past().toISOString(),
-  }));
+async function getEmployees() {
+  try {
+    const employees = await prisma.employee.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return employees;
+  } catch (error) {
+    console.error("Failed to fetch employees:", error);
+    return [];
+  }
+}
 
-export function EmployeeTableContainer() {
-  return <EmployeeTable columns={columns} data={payments} />;
+export async function EmployeeTableContainer() {
+  const employees = await getEmployees();
+
+  return <EmployeeTable columns={columns} data={employees} />;
 }

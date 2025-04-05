@@ -1,6 +1,8 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,19 +12,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/app/common/tanstack-table/DataTableColumnHeader";
-import dayjs from "dayjs";
 
 export type Employee = {
-  id: string;
-  employeeId: string;
+  id: number;
   name: string;
   email: string;
+  position: string;
   department: string;
-  jobTitle: string;
-  joiningDate: string;
+  joinDate: Date;
 };
 
 export const columns: ColumnDef<Employee>[] = [
@@ -53,52 +51,42 @@ export const columns: ColumnDef<Employee>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "employeeId",
-    header: "Employee ID",
-  },
-  {
     accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
-    ),
+    header: "Name",
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+            {row.original.name.charAt(0)}
+          </div>
+          <div>
+            <div className="font-medium">{row.original.name}</div>
+            <div className="text-sm text-muted-foreground">
+              {row.original.email}
+            </div>
+          </div>
+        </div>
+      );
+    },
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email Address" />
-    ),
+    accessorKey: "position",
+    header: "Position",
   },
   {
     accessorKey: "department",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Department" />
-    ),
+    header: "Department",
   },
   {
-    accessorKey: "jobTitle",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Job Title" />
-    ),
-  },
-  {
-    accessorKey: "joiningDate",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Joining Date" />
-    ),
-    accessorFn: (row) => {
-      return dayjs(row.joiningDate).format("MMM DD, YYYY");
-    },
-    sortingFn: (rowA, rowB) => {
-      return dayjs(rowA.original.joiningDate).diff(
-        dayjs(rowB.original.joiningDate)
-      );
+    accessorKey: "joinDate",
+    header: "Join Date",
+    cell: ({ row }) => {
+      return format(new Date(row.original.joinDate), "MMM dd, yyyy");
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -110,13 +98,13 @@ export const columns: ColumnDef<Employee>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(row.original.email)}
             >
-              Copy payment ID
+              Copy email
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem>Edit employee</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
