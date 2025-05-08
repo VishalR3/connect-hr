@@ -1,13 +1,5 @@
+import { Employee } from "@prisma/client";
 import { apiService } from "./apiService";
-
-export interface Employee {
-  id: number;
-  name: string;
-  email: string;
-  position: string;
-  department: string;
-  joinDate: string;
-}
 
 export const employeesApi = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -15,7 +7,7 @@ export const employeesApi = apiService.injectEndpoints({
       query: () => "employees",
       providesTags: ["Employee"],
     }),
-    getEmployee: builder.query<Employee, number>({
+    getEmployee: builder.query<Employee, string>({
       query: (id) => `employees/${id}`,
       providesTags: (result, error, id) => [{ type: "Employee", id }],
     }),

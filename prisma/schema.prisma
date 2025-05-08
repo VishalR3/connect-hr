@@ -6,25 +6,29 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "client/"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Employee {
-  id              Int               @id @default(autoincrement())
-  name            String
-  email           String            @unique
-  position        String
-  department      String
-  joinDate        DateTime
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  payrollRecords  PayrollRecord[]
-  attendance      AttendanceRecord[]
-  leaveRequests   LeaveRequest[]
+  id             Int                @id @default(autoincrement())
+  name           String
+  email          String             @unique
+  employeeId     String?
+  position       String
+  department     String
+  joinDate       DateTime
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  isActive       Boolean            @default(true)
+  payrollRecords PayrollRecord[]
+  attendance     AttendanceRecord[]
+  leaveRequests  LeaveRequest[]
 }
 
 model PayrollRecord {
@@ -41,14 +45,14 @@ model PayrollRecord {
 }
 
 model AttendanceRecord {
-  id        Int              @id @default(autoincrement())
+  id         Int              @id @default(autoincrement())
   employeeId Int
-  employee  Employee         @relation(fields: [employeeId], references: [id])
-  checkIn   DateTime
-  checkOut  DateTime?
-  status    AttendanceStatus @default(present)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  employee   Employee         @relation(fields: [employeeId], references: [id])
+  checkIn    DateTime
+  checkOut   DateTime?
+  status     AttendanceStatus @default(present)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 }
 
 model LeaveRequest {
@@ -65,19 +69,79 @@ model LeaveRequest {
 }
 
 model Settings {
-  id                Int     @id @default(1)
-  companyName       String
-  companyAddress    String
-  companyContact    String
-  companyTaxId      String
-  payrollCurrency   String  @default("USD")
-  payrollPayday     Int     @default(15)
-  payrollOvertimeRate Float @default(1.5)
-  leaveAnnualDays   Int     @default(20)
-  leaveSickDays     Int     @default(10)
-  leaveCarryForward Boolean @default(true)
+  id                  Int      @id @default(1)
+  companyName         String
+  companyAddress      String
+  companyContact      String
+  companyTaxId        String
+  payrollCurrency     String   @default("USD")
+  payrollPayday       Int      @default(15)
+  payrollOvertimeRate Float    @default(1.5)
+  leaveAnnualDays     Int      @default(20)
+  leaveSickDays       Int      @default(10)
+  leaveCarryForward   Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Department {
+  id                 Int    @id @default(autoincrement())
+  name               String
+  parentDepartmentId Int?
+}
+
+model Team {
+  id           Int    @id @default(autoincrement())
+  name         String
+  departmentId Int
+}
+
+model SalaryStructure {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+}
+
+model PayComponent {
+  id              Int                         @id @default(autoincrement())
+  name            String
+  category        PayComponentCategory        @default(earning)
+  calculationType PayComponentCalculationType @default(fixed)
+  amount          Float
+  formula         String?
+  baseComponentId Int?
+  isStatutory     Boolean                     @default(false)
+}
+
+model StructureComponent {
+  id                Int     @id @default(autoincrement())
+  salaryStructureId Int
+  payComponentId    Int
+  amount_override   Float?
+  percent_override  Float?
+  formula_override  String?
+}
+
+model EmployeeSalaryStructure {
+  id                Int      @id @default(autoincrement())
+  employeeId        Int
+  salaryStructureId Int
+  isActive          Boolean  @default(true)
+  effectiveFrom     DateTime
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+enum PayComponentCalculationType {
+  fixed
+  percentage
+  formula
+}
+
+enum PayComponentCategory {
+  earning
+  deduction
+  reimbursement
 }
 
 enum PayrollStatus {

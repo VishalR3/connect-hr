@@ -1,13 +1,9 @@
 import {
-  Calendar,
   CalendarDays,
   ChevronUp,
   CircleDollarSign,
-  Home,
-  Inbox,
   LayoutDashboard,
   PanelLeft,
-  Search,
   Settings,
   User2,
   Users,
@@ -44,7 +40,7 @@ const items = [
   },
   {
     title: "Employees",
-    url: "employees",
+    url: "/employees",
     icon: Users,
   },
   {

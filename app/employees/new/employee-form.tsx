@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 const formSchema = z.object({
+  employeeId: z.string().min(1, "Employee ID is required"),
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   position: z.string().min(2, "Position must be at least 2 characters"),
@@ -85,6 +86,19 @@ export function EmployeeForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input placeholder="john@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="employeeId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Employee ID</FormLabel>
+                <FormControl>
+                  <Input placeholder="ABC123" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
