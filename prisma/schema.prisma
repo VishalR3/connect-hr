@@ -16,19 +16,20 @@ datasource db {
 }
 
 model Employee {
-  id             Int                @id @default(autoincrement())
-  name           String
-  email          String             @unique
-  employeeId     String?
-  position       String
-  department     String
-  joinDate       DateTime
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  isActive       Boolean            @default(true)
-  payrollRecords PayrollRecord[]
-  attendance     AttendanceRecord[]
-  leaveRequests  LeaveRequest[]
+  id               Int                       @id @default(autoincrement())
+  name             String
+  email            String                    @unique
+  employeeId       String?
+  position         String
+  department       String
+  joinDate         DateTime
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime                  @updatedAt
+  isActive         Boolean                   @default(true)
+  payrollRecords   PayrollRecord[]
+  attendance       AttendanceRecord[]
+  leaveRequests    LeaveRequest[]
+  salaryStructures EmployeeSalaryStructure[]
 }
 
 model PayrollRecord {
@@ -88,18 +89,27 @@ model Department {
   id                 Int    @id @default(autoincrement())
   name               String
   parentDepartmentId Int?
+
+  parentDepartment Department @relation(fields: [parentDepartmentId], references: [id])
+  teams            Team[]
 }
 
 model Team {
   id           Int    @id @default(autoincrement())
   name         String
   departmentId Int
+
+  department Department @relation(fields: [departmentId], references: [id])
 }
 
 model SalaryStructure {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  components StructureComponent[]
 }
 
 model PayComponent {
@@ -111,15 +121,19 @@ model PayComponent {
   formula         String?
   baseComponentId Int?
   isStatutory     Boolean                     @default(false)
+
+  baseComponent PayComponent @relation(fields: [baseComponentId], references: [id])
 }
 
 model StructureComponent {
   id                Int     @id @default(autoincrement())
   salaryStructureId Int
   payComponentId    Int
-  amount_override   Float?
-  percent_override  Float?
-  formula_override  String?
+  amountOverride    Float?
+  formulaOverride   String?
+
+  payComponent    PayComponent    @relation(fields: [payComponentId], references: [id])
+  salaryStructure SalaryStructure @relation(fields: [salaryStructureId], references: [id])
 }
 
 model EmployeeSalaryStructure {
@@ -130,6 +144,9 @@ model EmployeeSalaryStructure {
   effectiveFrom     DateTime
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  employee        Employee        @relation(fields: [employeeId], references: [id])
+  salaryStructure SalaryStructure @relation(fields: [salaryStructureId], references: [id])
 }
 
 enum PayComponentCalculationType {

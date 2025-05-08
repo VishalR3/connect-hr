@@ -17,13 +17,16 @@ import { Switch } from "@/components/ui/switch";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Pencil, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useGetEmployeeQuery } from "@/lib/api/employeesApi";
 import React from "react";
 import LoadingSuspense from "@/app/common/LoadingSuspense/LoadingSuspense";
+import { Card, CardContent, CardHeader } from "@mui/material";
+import { CardTitle } from "@/components/ui/card";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/app/constants/constants";
 
 // --- Reusable Detail Item (can be moved to a shared components folder) ---
 function DetailItem({
@@ -103,30 +106,70 @@ export default function EmployeeOverviewPage() {
 
   // --- Read-Only View for Overview ---
   const ReadOnlyOverview = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Personal & Job Information</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <DetailItem label="Full Name" value={employee?.name} />
-        <DetailItem label="Email" value={employee?.email} />
-        <Separator />
-        <DetailItem label="Position" value={employee?.position} />
-        <DetailItem label="Department" value={employee?.department} />
-        <DetailItem
-          label="Join Date"
-          value={
-            employee?.joinDate
-              ? format(new Date(employee?.joinDate), "PPP")
-              : "-"
-          }
-        />
-        <DetailItem
-          label="Status"
-          value={employee?.isActive ? "Active" : "Inactive"}
-        />
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-12 gap-4">
+      <div className="col-span-12 md:col-span-8">
+        <Card>
+          <CardHeader title="Personal Information" />
+          <CardContent className="space-y-12 ">
+            <DetailItem label="Full Name" value={employee?.name} />
+            <DetailItem label="Email" value={employee?.email} />
+            <DetailItem label="Position" value={employee?.position} />
+            <DetailItem label="Department" value={employee?.department} />
+            <DetailItem
+              label="Join Date"
+              value={
+                employee?.joinDate
+                  ? format(new Date(employee?.joinDate), "PPP")
+                  : "-"
+              }
+            />
+            <DetailItem
+              label="Status"
+              value={employee?.isActive ? "Active" : "Inactive"}
+            />
+          </CardContent>
+        </Card>
+      </div>
+      <div className="flex flex-col gap-4 col-span-12 md:col-span-4">
+        <Card>
+          <CardHeader title="Contact Information" />
+          <CardContent>
+            <div className="space-y-4">
+              <div>Personal Contact</div>
+              <div className="space-y-2">
+                <DetailItem label="Phone" value={"+91 123456789"} />
+                <DetailItem label="Email" value={"bM8oO@example.com"} />
+              </div>
+            </div>
+            <Separator className="my-4" />
+            <div className="space-y-4">
+              <div>Emergency Contact</div>
+              <div className="space-y-2">
+                <DetailItem label="Phone" value={"+91 123456789"} />
+                <DetailItem label="Name" value={"John Doe"} />
+                <DetailItem label="Relation" value={"Brother"} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader title="Employment Overview" />
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <DetailItem
+                  label="Joining Date"
+                  value={dayjs(employee?.joinDate).format(DATE_FORMAT)}
+                />
+                <DetailItem label="Position" value={employee?.position} />
+                <DetailItem label="Department" value={employee?.department} />
+                <DetailItem label="Job Type" value={"Full Time"} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 
   // --- Edit View for Overview ---
@@ -255,14 +298,14 @@ export default function EmployeeOverviewPage() {
   return (
     <div className="space-y-6">
       <LoadingSuspense isLoading={isLoading} isError={isError}>
-        {!isEditing && (
+        {/* {!isEditing && (
           <div className="flex justify-end">
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit Overview
             </Button>
           </div>
-        )}
+        )} */}
 
         {isEditing ? <EditOverview /> : <ReadOnlyOverview />}
       </LoadingSuspense>
