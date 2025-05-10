@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "client/"
 }
 
 datasource db {
@@ -90,7 +89,8 @@ model Department {
   name               String
   parentDepartmentId Int?
 
-  parentDepartment Department @relation(fields: [parentDepartmentId], references: [id])
+  parentDepartment Department?  @relation("Departments", fields: [parentDepartmentId], references: [id])
+  childDepartments Department[] @relation("Departments")
   teams            Team[]
 }
 
@@ -109,7 +109,8 @@ model SalaryStructure {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  components StructureComponent[]
+  components               StructureComponent[]
+  employeeSalaryStructures EmployeeSalaryStructure[]
 }
 
 model PayComponent {
@@ -121,8 +122,12 @@ model PayComponent {
   formula         String?
   baseComponentId Int?
   isStatutory     Boolean                     @default(false)
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
 
-  baseComponent PayComponent @relation(fields: [baseComponentId], references: [id])
+  baseComponent       PayComponent?        @relation("BaseComponents", fields: [baseComponentId], references: [id])
+  childComponent      PayComponent[]       @relation("BaseComponents")
+  structureComponents StructureComponent[]
 }
 
 model StructureComponent {
