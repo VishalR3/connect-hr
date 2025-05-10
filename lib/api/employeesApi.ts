@@ -34,6 +34,18 @@ export const employeesApi = apiService.injectEndpoints({
       }),
       invalidatesTags: ["Employee"],
     }),
+    getEmployeeCompensations: builder.query({
+      query: (id) => `employees/${id}/compensation`,
+      providesTags: (result, error, id) => [{ type: "Compensation", id }],
+    }),
+    createCompensation: builder.mutation({
+      query: (body) => ({
+        url: `employees/${body.employeeId}/compensation/`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Compensation"],
+    }),
   }),
 });
 
@@ -43,4 +55,6 @@ export const {
   useCreateEmployeeMutation,
   useUpdateEmployeeMutation,
   useDeleteEmployeeMutation,
+  useGetEmployeeCompensationsQuery,
+  useCreateCompensationMutation,
 } = employeesApi;

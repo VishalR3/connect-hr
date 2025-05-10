@@ -1,6 +1,6 @@
 "use client";
+import { PayComponent } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { PayComponent } from "@/prisma/client";
 
 export const columns: ColumnDef<PayComponent>[] = [
   {

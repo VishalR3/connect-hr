@@ -15,7 +15,7 @@ export default function NewCompensation() {
       </Button>
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogContent>
-          <CompensationForm />
+          <CompensationForm handleClose={handleClose} />
         </DialogContent>
       </Dialog>
     </>

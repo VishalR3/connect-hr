@@ -1,186 +1,139 @@
-import { PayComponent } from "@/prisma/client";
-import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
-import { useCallback } from "react";
+"use client";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+} from "@mui/material";
 import NewCompensation from "./NewCompensation";
+import { useGetEmployeeCompensationsQuery } from "@/lib/api/employeesApi";
+import { useParams } from "next/navigation";
+import LoadingSuspense from "@/app/common/LoadingSuspense/LoadingSuspense";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/app/constants/constants";
+import { formatIndianCurrency } from "@/utils/utils";
+import { useEffect, useState } from "react";
 
 export default function Compensation() {
-  const salaryComponents: PayComponent[] = [
-    {
-      id: 1,
-      name: "Basic",
-      category: "earning",
-      calculationType: "fixed",
-      amount: 40000,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: null,
-    },
-    {
-      id: 2,
-      name: "HRA",
-      category: "earning",
-      calculationType: "percentage",
-      amount: 20.0,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: 1,
-    },
-    {
-      id: 3,
-      name: "Children Education Allowance",
-      category: "earning",
-      calculationType: "fixed",
-      amount: 200,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: null,
-    },
-    {
-      id: 4,
-      name: "Children Hostel Allowance",
-      category: "earning",
-      calculationType: "fixed",
-      amount: 600,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: null,
-    },
-    {
-      id: 5,
-      name: "Communication allowance",
-      category: "earning",
-      calculationType: "percentage",
-      amount: 10.0,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: 1,
-    },
-    {
-      id: 6,
-      name: "Travel reimbursement",
-      category: "earning",
-      calculationType: "fixed",
-      amount: 2500,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: null,
-    },
-    {
-      id: 7,
-      name: "Special Allowance",
-      category: "earning",
-      calculationType: "percentage",
-      amount: 15.0,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: 1,
-    },
-    {
-      id: 8,
-      name: "Variable pay",
-      category: "earning",
-      calculationType: "percentage",
-      amount: 0.0,
-      isStatutory: false,
-      formula: null,
-      baseComponentId: 1,
-    },
-    {
-      id: 9,
-      name: "Employee PF",
-      category: "deduction",
-      calculationType: "fixed",
-      amount: 1800,
-      isStatutory: true,
-      formula: null,
-      baseComponentId: null,
-    },
-    {
-      id: 10,
-      name: "Employee ESI",
-      category: "deduction",
-      calculationType: "fixed",
-      amount: 0,
-      isStatutory: true,
-      formula: null,
-      baseComponentId: null,
-    },
-    {
-      id: 11,
-      name: "PT",
-      category: "deduction",
-      calculationType: "fixed",
-      amount: 200,
-      isStatutory: true,
-      formula: null,
-      baseComponentId: null,
-    },
-  ];
+  const { id } = useParams();
+  const {
+    data: compensations,
+    isLoading,
+    isError,
+  } = useGetEmployeeCompensationsQuery(id);
 
-  const getComponentAmount = useCallback((component: PayComponent) => {
-    if (
-      component.calculationType === "percentage" &&
-      component.baseComponentId
-    ) {
-      const baseComponent = salaryComponents.find(
-        (c) => c.id === component.baseComponentId
+  const [activeCompensation, setActiveCompensation] = useState(0);
+
+  useEffect(() => {
+    if (compensations) {
+      const index = compensations.findIndex((compensation) =>
+        dayjs().isAfter(compensation.salaryStructure.effectiveFrom)
       );
-      if (baseComponent) {
-        return baseComponent.amount * (component.amount / 100);
-      }
+      console.log(index);
+      setActiveCompensation(index);
     }
-    return component.amount;
-  }, []);
-
-  const getTotalAmount = useCallback(() => {
-    return salaryComponents.reduce(
-      (total, component) =>
-        total +
-        (component.category === "deduction"
-          ? -getComponentAmount(component)
-          : getComponentAmount(component)),
-      0
-    );
-  }, []);
+  }, [compensations]);
 
   return (
     <>
       <div className="mb-4">
         <NewCompensation />
       </div>
-      <Accordion>
-        <AccordionSummary>Current Compensation</AccordionSummary>
-        <AccordionDetails>
-          <div className="flex-default max-w-2xl flex-row">
-            <div className="p-3 flex flex-col gap-2 shadow rounded">
-              <div className="text-2xl text-muted-foreground">
-                {getTotalAmount() * 12}
-              </div>
-              <div className="font-medium">Yearly Compensation</div>
-            </div>
-            <div className="p-3 flex flex-col gap-2 shadow rounded">
-              <div className="text-2xl text-muted-foreground">
-                {getTotalAmount()}
-              </div>
-              <div className="font-medium">Total Compensation</div>
-            </div>
-          </div>
-          <div className="flex flex-col max-w-2xl mt-6">
-            {salaryComponents.map((component) => (
-              <div className="flex-default" key={component.id}>
-                <div>{component.name}</div>
-                <div
-                  className={`${
-                    component.category === "deduction" ? "text-red-500" : ""
-                  }`}
-                >
-                  {getComponentAmount(component)}
+      <LoadingSuspense isLoading={isLoading} isError={isError}>
+        {compensations?.map((compensation, index) => (
+          <Accordion
+            key={compensation.id}
+            defaultExpanded={index == activeCompensation}
+          >
+            <AccordionSummary>
+              <div className="flex flex-col gap-4 w-full">
+                <div className="flex justify-between gap-4">
+                  Compensation
+                  <div>
+                    Effective From{" "}
+                    {dayjs(compensation.salaryStructure.effectiveFrom).format(
+                      DATE_FORMAT
+                    )}
+                  </div>
+                </div>
+                <div className="flex-default flex-row">
+                  <div className="p-3 flex flex-col gap-2 shadow rounded">
+                    <div className="text-2xl text-muted-foreground">
+                      {compensation.salaryStructure.yearlyCompensation}
+                    </div>
+                    <div className="font-medium">Yearly Compensation</div>
+                  </div>
+                  <div className="p-3 flex flex-col gap-2 shadow rounded">
+                    <div className="text-2xl text-muted-foreground">
+                      {compensation.salaryStructure.monthlyCompensation}
+                    </div>
+                    <div className="font-medium">Total Compensation</div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </AccordionDetails>
-      </Accordion>
+            </AccordionSummary>
+            <AccordionDetails>
+              <div
+                className="grid gap-x-4 gap-y-2"
+                style={{ gridTemplateColumns: "2fr 150px 150px  1fr 1fr" }}
+              >
+                {compensation.salaryStructure.components?.map((component) => (
+                  <div
+                    key={component.id}
+                    className="grid grid-cols-subgrid col-span-5 items-center gap-x-4 h-10"
+                    style={{
+                      counterIncrement: "component",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        "&:before": {
+                          content: `counter(component) ". "`,
+                        },
+                      }}
+                      className="font-medium"
+                    >
+                      {component.payComponent.name}
+                    </Box>
+                    <div className="capitalize">
+                      {component.payComponent.category}
+                    </div>
+                    <div className="capitalize">
+                      {component.payComponent.calculationType}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 justify-end cursor-pointer text-nowrap">
+                        <div className="border-b-2 border-dashed border-indigo-200">
+                          {component.payComponent.calculationType === "fixed" &&
+                            formatIndianCurrency(component.amountOverride)}
+                          {component.payComponent.calculationType ===
+                            "percentage" &&
+                            Number(component.amountOverride).toFixed(2) + "%"}
+                        </div>
+                        {component.payComponent.calculationType ===
+                          "percentage" && (
+                          <div>
+                            of {component.payComponent.baseComponent.name}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      className={`capitalize font-medium justify-self-end ${
+                        component.payComponent.category === "deduction"
+                          ? "text-red-600"
+                          : ""
+                      }`}
+                    >
+                      {formatIndianCurrency(component.calculatedAmount)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </LoadingSuspense>
     </>
   );
 }

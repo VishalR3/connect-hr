@@ -10,6 +10,7 @@ export const apiService = createApi({
     "Leave",
     "Settings",
     "PayComponent",
+    "Compensation",
   ],
   endpoints: () => ({}),
 });
