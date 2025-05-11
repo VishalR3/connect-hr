@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { User, Users, Banknote, Clock, Receipt } from "lucide-react";
+import { User, Banknote, Clock, Receipt } from "lucide-react";
 import React from "react";
 import { useGetEmployeeQuery } from "@/lib/api/employeesApi";
 import LoadingSuspense from "@/app/common/LoadingSuspense/LoadingSuspense";
@@ -11,11 +11,6 @@ function EmployeeNavigation({ employeeId }: { employeeId: string }) {
   // TODO: Add active state styling based on current pathname
   const navItems = [
     { href: `/employees/${employeeId}`, label: "Overview", icon: User },
-    {
-      href: `/employees/${employeeId}/leadership`,
-      label: "Leadership",
-      icon: Users,
-    },
     {
       href: `/employees/${employeeId}/compensation`,
       label: "Compensation",
@@ -72,11 +67,6 @@ export default function EmployeeDetailLayout({
           </div>
         </div>
       </LoadingSuspense>
-      {/* Edit button might link to an edit mode or be handled differently */}
-      {/* <Button variant="outline">
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit Details
-        </Button> */}
     </div>
   );
 

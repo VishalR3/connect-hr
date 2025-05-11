@@ -8,7 +8,7 @@ export async function GET(
   try {
     const compensations = await prisma.employeeSalaryStructure.findMany({
       where: {
-        employeeId: parseInt(params.id),
+        employeeId: parseInt((await params).id),
       },
       orderBy: { salaryStructure: { effectiveFrom: "desc" } },
       include: {

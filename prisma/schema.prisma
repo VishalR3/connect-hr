@@ -15,33 +15,93 @@ datasource db {
 }
 
 model Employee {
-  id               Int                       @id @default(autoincrement())
-  name             String
-  email            String                    @unique
-  employeeId       String?
-  position         String
-  department       String
-  joinDate         DateTime
-  createdAt        DateTime                  @default(now())
-  updatedAt        DateTime                  @updatedAt
-  isActive         Boolean                   @default(true)
-  payrollRecords   PayrollRecord[]
-  attendance       AttendanceRecord[]
-  leaveRequests    LeaveRequest[]
-  salaryStructures EmployeeSalaryStructure[]
+  id                       Int                        @id @default(autoincrement())
+  employeeId               String?
+  name                     String
+  email                    String                     @unique
+  position                 String
+  department               String
+  joinDate                 DateTime
+  location                 String?
+  phone                    String?
+  pan                      String?
+  pfNumber                 String?
+  uan                      String?
+  dob                      DateTime?
+  bloodGroup               String?
+  maritalStatus            String?
+  gender                   String?
+  religion                 String?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  isActive                 Boolean                    @default(true)
+  payrollRecords           PayrollRecord[]
+  attendance               AttendanceRecord[]
+  leaveRequests            LeaveRequest[]
+  salaryStructures         EmployeeSalaryStructure[]
+  EmployeeBankAccount      EmployeeBankAccount[]
+  EmployeeEmergencyContact EmployeeEmergencyContact[]
+}
+
+model EmployeeBankAccount {
+  id            Int      @id @default(autoincrement())
+  employeeId    Int
+  employee      Employee @relation(fields: [employeeId], references: [id])
+  bankName      String
+  accountNumber String
+  ifscCode      String
+  isPrimary     Boolean
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model EmployeeEmergencyContact {
+  id           Int      @id @default(autoincrement())
+  employeeId   Int
+  employee     Employee @relation(fields: [employeeId], references: [id])
+  name         String
+  relationship String
+  phone        String
+  address      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PayrollRun {
+  id            Int              @id @default(autoincrement())
+  periodStart   DateTime
+  periodEnd     DateTime
+  status        PayrollRunStatus
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  PayrollRecord PayrollRecord[]
 }
 
 model PayrollRecord {
-  id          Int           @id @default(autoincrement())
-  employeeId  Int
-  employee    Employee      @relation(fields: [employeeId], references: [id])
-  salary      Float
-  bonus       Float?
-  deductions  Float?
-  status      PayrollStatus @default(pending)
-  paymentDate DateTime
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           Int            @id @default(autoincrement())
+  payrollRunId Int
+  payrollRun   PayrollRun     @relation(fields: [payrollRunId], references: [id])
+  employeeId   Int
+  employee     Employee       @relation(fields: [employeeId], references: [id])
+  grossSalary  Float
+  bonus        Float?
+  deductions   Float?
+  netSalary    Float
+  status       PayrollStatus  @default(pending)
+  paymentDate  DateTime
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  PayrollEntry PayrollEntry[]
+}
+
+model PayrollEntry {
+  id              Int           @id @default(autoincrement())
+  payrollRecordId Int
+  payrollRecord   PayrollRecord @relation(fields: [payrollRecordId], references: [id])
+  componentId     Int?
+  component       PayComponent? @relation(fields: [componentId], references: [id])
+  componentName   String
+  amount          Float
 }
 
 model AttendanceRecord {
@@ -130,6 +190,7 @@ model PayComponent {
   baseComponent       PayComponent?        @relation("BaseComponents", fields: [baseComponentId], references: [id])
   childComponent      PayComponent[]       @relation("BaseComponents")
   structureComponents StructureComponent[]
+  PayrollEntry        PayrollEntry[]
 }
 
 model StructureComponent {
@@ -163,6 +224,13 @@ enum PayComponentCategory {
   earning
   deduction
   reimbursement
+}
+
+enum PayrollRunStatus {
+  draft
+  calculated
+  approved
+  paid
 }
 
 enum PayrollStatus {
