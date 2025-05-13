@@ -1,3 +1,4 @@
+import { PayrollRun } from "@prisma/client";
 import { apiService } from "./apiService";
 
 export interface PayrollRecord {
@@ -14,6 +15,10 @@ export const payrollApi = apiService.injectEndpoints({
   endpoints: (builder) => ({
     getLatestPayrollRun: builder.query({
       query: () => "payrun",
+      providesTags: ["Payrun"],
+    }),
+    getPayrollRuns: builder.query<PayrollRun[], void>({
+      query: () => "payrun/all",
       providesTags: ["Payrun"],
     }),
     getPayrollRecord: builder.query<PayrollRecord, number>({
@@ -62,6 +67,7 @@ export const payrollApi = apiService.injectEndpoints({
 
 export const {
   useGetLatestPayrollRunQuery,
+  useGetPayrollRunsQuery,
   useGetPayrollRecordQuery,
   useCreatePayrollRecordMutation,
   useUpdatePayrollRecordMutation,

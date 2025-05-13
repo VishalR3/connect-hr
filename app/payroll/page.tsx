@@ -3,8 +3,13 @@ import { Button } from "@/components/ui/button";
 import { RecordTableContainer } from "./record-table/container";
 import { Blocks, PlusCircle } from "lucide-react";
 import Link from "next/link";
-import { useGetLatestPayrollRunQuery } from "@/lib/api/payrollApi";
+import {
+  useGetLatestPayrollRunQuery,
+  useGetPayrollRunsQuery,
+} from "@/lib/api/payrollApi";
 import LoadingSuspense from "../common/LoadingSuspense/LoadingSuspense";
+import PayrunTable from "./payrun-table";
+import { PayrollRun } from "@prisma/client";
 
 export default function PayrollPage() {
   const {
@@ -12,6 +17,12 @@ export default function PayrollPage() {
     isLoading,
     isError,
   } = useGetLatestPayrollRunQuery({});
+  const {
+    data: payruns,
+    isLoading: isPayrunsLoading,
+    isError: isPayrunsError,
+  } = useGetPayrollRunsQuery();
+
   return (
     <div className="w-full p-4">
       <div className="flex flex-col gap-4">
@@ -32,8 +43,16 @@ export default function PayrollPage() {
         </div>
       </div>
       <div className="mt-8 ">
+        <h2 className="mb-4 text-xl font-medium">Latest Pay Run</h2>
         <LoadingSuspense isLoading={isLoading} isError={isError}>
           <RecordTableContainer payrun={latestPayRun} />
+        </LoadingSuspense>
+      </div>
+      <div className="mt-8">
+        <h2 className="mb-4 text-xl font-medium">Pay Runs</h2>
+
+        <LoadingSuspense isLoading={isPayrunsLoading} isError={isPayrunsError}>
+          <PayrunTable data={payruns as PayrollRun[]} />
         </LoadingSuspense>
       </div>
     </div>
