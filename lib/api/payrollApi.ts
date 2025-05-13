@@ -12,9 +12,9 @@ export interface PayrollRecord {
 
 export const payrollApi = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    getPayrollRecords: builder.query<PayrollRecord[], void>({
-      query: () => "payroll",
-      providesTags: ["Payroll"],
+    getLatestPayrollRun: builder.query({
+      query: () => "payrun",
+      providesTags: ["Payrun"],
     }),
     getPayrollRecord: builder.query<PayrollRecord, number>({
       query: (id) => `payroll/${id}`,
@@ -49,13 +49,22 @@ export const payrollApi = apiService.injectEndpoints({
       }),
       invalidatesTags: ["Payroll"],
     }),
+    createPayrollRun: builder.mutation({
+      query: (body) => ({
+        url: "payrun",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Payrun"],
+    }),
   }),
 });
 
 export const {
-  useGetPayrollRecordsQuery,
+  useGetLatestPayrollRunQuery,
   useGetPayrollRecordQuery,
   useCreatePayrollRecordMutation,
   useUpdatePayrollRecordMutation,
   useDeletePayrollRecordMutation,
+  useCreatePayrollRunMutation,
 } = payrollApi;

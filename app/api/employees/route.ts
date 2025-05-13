@@ -5,6 +5,23 @@ export async function GET() {
   try {
     const employees = await prisma.employee.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        salaryStructures: {
+          where: { salaryStructure: { effectiveFrom: { lte: new Date() } } },
+          take: 1,
+          include: {
+            salaryStructure: {
+              include: {
+                components: {
+                  include: {
+                    payComponent: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     return NextResponse.json(employees);
   } catch (error) {

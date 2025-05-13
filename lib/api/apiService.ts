@@ -11,6 +11,7 @@ export const apiService = createApi({
     "Settings",
     "PayComponent",
     "Compensation",
+    "Payrun",
   ],
   endpoints: () => ({}),
 });

@@ -15,16 +15,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/app/common/tanstack-table/DataTableColumnHeader";
 import dayjs from "dayjs";
 import { formatIndianCurrency } from "@/utils/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import StatusCell from "./status-cell";
+import { Avatar } from "@mui/material";
+import { stringAvatar } from "@/utils/avatarUtils";
 
 export type Record = {
   id: string;
   totalAmount: string;
   employee: string;
   employeeImage: string;
-  payPeriodStart: string;
-  payPeriodEnd: string;
   processedDate: string;
   status: string;
 };
@@ -80,32 +79,10 @@ export const columns: ColumnDef<Record>[] = [
       return (
         <div className="flex items-center gap-4">
           <div>
-            <Avatar>
-              <AvatarImage src={row.original.employeeImage} alt="@shadcn" />
-              <AvatarFallback>{row.original.employee[0]}</AvatarFallback>
-            </Avatar>
+            <Avatar {...stringAvatar(row.original.employee)} />
           </div>
           {row.original.employee}
         </div>
-      );
-    },
-  },
-  {
-    accessorKey: "payPeriodStart",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Pay Period" />
-    ),
-    cell: ({ row }) => {
-      return (
-        <div>
-          {dayjs(row.original.payPeriodStart).format("MMM DD")} -{" "}
-          {dayjs(row.original.payPeriodEnd).format("MMM DD")}
-        </div>
-      );
-    },
-    sortingFn: (rowA, rowB) => {
-      return dayjs(rowA.original.payPeriodStart).diff(
-        dayjs(rowB.original.payPeriodStart)
       );
     },
   },
@@ -115,7 +92,9 @@ export const columns: ColumnDef<Record>[] = [
       <DataTableColumnHeader column={column} title="Processed Date" />
     ),
     accessorFn: (row) => {
-      return dayjs(row?.processedDate)?.format("MMM DD, YYYY") ?? "";
+      return row.processedDate
+        ? dayjs(row?.processedDate).format("MMM DD, YYYY")
+        : "--";
     },
   },
   {

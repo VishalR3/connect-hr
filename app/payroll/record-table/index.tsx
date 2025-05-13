@@ -22,16 +22,20 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DataTablePagination } from "@/app/common/tanstack-table/DataTablePagination";
 import { DataTableViewOptions } from "@/app/common/tanstack-table/DataTableViewOptions";
-import { ChevronDown, FileInput, LayoutPanelTop, Search } from "lucide-react";
+import { ChevronDown, LayoutPanelTop, Search } from "lucide-react";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/app/constants/constants";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  payrun: any;
 }
 
 export function RecordTable<TData, TValue>({
   columns,
   data,
+  payrun,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -66,10 +70,9 @@ export function RecordTable<TData, TValue>({
           </Button>
           <DataTableViewOptions table={table} />
         </div>
-        <div>
-          <Button variant={"outline"}>
-            <FileInput /> Import
-          </Button>
+        <div className="text-sm font-semibold">
+          {dayjs(payrun.periodStart).format(DATE_FORMAT)} -{" "}
+          {dayjs(payrun.periodEnd).format(DATE_FORMAT)}
         </div>
       </div>
 

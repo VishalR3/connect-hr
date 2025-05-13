@@ -88,7 +88,7 @@ model PayrollRecord {
   deductions   Float?
   netSalary    Float
   status       PayrollStatus  @default(pending)
-  paymentDate  DateTime
+  paymentDate  DateTime?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   PayrollEntry PayrollEntry[]
