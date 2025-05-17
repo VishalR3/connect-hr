@@ -8,6 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -102,6 +106,7 @@ model PayrollEntry {
   component       PayComponent? @relation(fields: [componentId], references: [id])
   componentName   String
   amount          Float
+  type            PayComponentCategory?
 }
 
 model AttendanceRecord {

@@ -2,10 +2,17 @@ import { DataTableColumnHeader } from "@/app/common/tanstack-table/DataTableColu
 import EmployeeNameCell from "@/app/employees/employee-table/EmployeeNameCell";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatIndianCurrency } from "@/utils/utils";
-import { Employee } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
+import { Employee, PayrollEntry, PayrollRecord } from "@prisma/client";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import AdditionalPay from "./AdditionalPay";
 
-export const columns: ColumnDef<Employee>[] = [
+export interface RecordWithEmployee extends PayrollRecord {
+  employee: Employee;
+  PayrollEntry: PayrollEntry[];
+  totalAmount: number;
+}
+
+export const columns: ColumnDef<RecordWithEmployee>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -33,13 +40,24 @@ export const columns: ColumnDef<Employee>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "employee.name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Employee" />
     ),
     cell: ({ row }) => {
-      return <EmployeeNameCell row={row} />;
+      return (
+        <EmployeeNameCell
+          row={{ original: row.original.employee } as Row<Employee>}
+        />
+      );
     },
+  },
+  {
+    accessorKey: "Additional",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Additional" />
+    ),
+    cell: ({ row }) => <AdditionalPay row={row} />,
   },
   {
     accessorKey: "grossSalary",
@@ -49,11 +67,20 @@ export const columns: ColumnDef<Employee>[] = [
     cell: ({ row }) => {
       return (
         <div className="font-medium">
-          {row.original.salaryStructures.length > 0 &&
-            formatIndianCurrency(
-              row.original.salaryStructures[0].salaryStructure
-                .monthlyCompensation
-            )}
+          {formatIndianCurrency(row.original.netSalary)}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "totalAmount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Total Amount" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="font-medium">
+          {formatIndianCurrency(row.original.totalAmount)}
         </div>
       );
     },

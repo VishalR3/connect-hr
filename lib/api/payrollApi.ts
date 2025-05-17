@@ -21,6 +21,10 @@ export const payrollApi = apiService.injectEndpoints({
       query: () => "payrun/all",
       providesTags: ["Payrun"],
     }),
+    getPayrollRun: builder.query<PayrollRun, number>({
+      query: (id) => `payrun/${id}`,
+      providesTags: (result, error, id) => [{ type: "Payrun", id }],
+    }),
     getPayrollRecord: builder.query<PayrollRecord, number>({
       query: (id) => `payroll/${id}`,
       providesTags: (result, error, id) => [{ type: "Payroll", id }],
@@ -35,6 +39,14 @@ export const payrollApi = apiService.injectEndpoints({
         body,
       }),
       invalidatesTags: ["Payroll"],
+    }),
+    createPayrollEntry: builder.mutation({
+      query: (body) => ({
+        url: "payroll-entry",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Payrun"],
     }),
     updatePayrollRecord: builder.mutation<
       PayrollRecord,
@@ -54,6 +66,13 @@ export const payrollApi = apiService.injectEndpoints({
       }),
       invalidatesTags: ["Payroll"],
     }),
+    deletePayrollEntry: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `payroll-entry/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Payrun"],
+    }),
     createPayrollRun: builder.mutation({
       query: (body) => ({
         url: "payrun",
@@ -68,9 +87,12 @@ export const payrollApi = apiService.injectEndpoints({
 export const {
   useGetLatestPayrollRunQuery,
   useGetPayrollRunsQuery,
+  useGetPayrollRunQuery,
   useGetPayrollRecordQuery,
   useCreatePayrollRecordMutation,
+  useCreatePayrollEntryMutation,
   useUpdatePayrollRecordMutation,
   useDeletePayrollRecordMutation,
+  useDeletePayrollEntryMutation,
   useCreatePayrollRunMutation,
 } = payrollApi;

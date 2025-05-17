@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const payrollRun = await prisma.payrollRun.findFirst({
-      orderBy: { createdAt: "desc" },
+      orderBy: { periodStart: "desc" },
       include: {
         PayrollRecord: {
           include: {

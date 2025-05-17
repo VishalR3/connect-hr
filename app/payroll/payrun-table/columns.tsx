@@ -58,9 +58,14 @@ export const columns: ColumnDef<PayrollRun>[] = [
   },
   {
     id: "actions",
-    cell: () => (
+    cell: ({ row }) => (
       <div>
-        <Button size={"sm"}>Run Payroll</Button>
+        <Button
+          size={"sm"}
+          onClick={() => (window.location.href = `/payroll/${row.original.id}`)}
+        >
+          View
+        </Button>
       </div>
     ),
   },

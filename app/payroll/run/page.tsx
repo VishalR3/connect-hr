@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import { useGetEmployeesQuery } from "@/lib/api/employeesApi";
 import { useCreatePayrollRunMutation } from "@/lib/api/payrollApi";
 import { handleAsyncWithToast } from "@/utils/utils";
+import { useRouter } from "next/navigation";
 
 export default function PayrollRun() {
   const [date, setDate] = useState<any>({
@@ -18,6 +19,7 @@ export default function PayrollRun() {
 
   const { data: employees } = useGetEmployeesQuery();
   const [createPayrollRun] = useCreatePayrollRunMutation();
+  const router = useRouter();
 
   const handleSavePayRun = () => {
     const payload = {
@@ -51,8 +53,8 @@ export default function PayrollRun() {
       })),
     };
 
-    console.log(payload);
     handleAsyncWithToast(() => createPayrollRun(payload), "Payroll run saved");
+    router.push("/payroll");
   };
 
   return (
@@ -61,10 +63,9 @@ export default function PayrollRun() {
         <div className="flex-default">
           <h2>Payroll Run</h2>
           <div className="flex-default">
-            <Button variant={"outline"} onClick={handleSavePayRun}>
+            <Button onClick={handleSavePayRun}>
               <Save /> Save
             </Button>
-            <Button> Run Payroll</Button>
           </div>
         </div>
       </div>

@@ -1,0 +1,276 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Employee {
+  id Int [pk, increment]
+  employeeId String
+  name String [not null]
+  email String [unique, not null]
+  position String [not null]
+  department String [not null]
+  joinDate DateTime [not null]
+  location String
+  phone String
+  pan String
+  pfNumber String
+  uan String
+  dob DateTime
+  bloodGroup String
+  maritalStatus String
+  gender String
+  religion String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  isActive Boolean [not null, default: true]
+  payrollRecords PayrollRecord [not null]
+  attendance AttendanceRecord [not null]
+  leaveRequests LeaveRequest [not null]
+  salaryStructures EmployeeSalaryStructure [not null]
+  EmployeeBankAccount EmployeeBankAccount [not null]
+  EmployeeEmergencyContact EmployeeEmergencyContact [not null]
+}
+
+Table EmployeeBankAccount {
+  id Int [pk, increment]
+  employeeId Int [not null]
+  employee Employee [not null]
+  bankName String [not null]
+  accountNumber String [not null]
+  ifscCode String [not null]
+  isPrimary Boolean [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table EmployeeEmergencyContact {
+  id Int [pk, increment]
+  employeeId Int [not null]
+  employee Employee [not null]
+  name String [not null]
+  relationship String [not null]
+  phone String [not null]
+  address String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table PayrollRun {
+  id Int [pk, increment]
+  periodStart DateTime [not null]
+  periodEnd DateTime [not null]
+  status PayrollRunStatus [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  PayrollRecord PayrollRecord [not null]
+}
+
+Table PayrollRecord {
+  id Int [pk, increment]
+  payrollRunId Int [not null]
+  payrollRun PayrollRun [not null]
+  employeeId Int [not null]
+  employee Employee [not null]
+  grossSalary Float [not null]
+  bonus Float
+  deductions Float
+  netSalary Float [not null]
+  status PayrollStatus [not null, default: 'pending']
+  paymentDate DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  PayrollEntry PayrollEntry [not null]
+}
+
+Table PayrollEntry {
+  id Int [pk, increment]
+  payrollRecordId Int [not null]
+  payrollRecord PayrollRecord [not null]
+  componentId Int
+  component PayComponent
+  componentName String [not null]
+  amount Float [not null]
+  type PayComponentCategory
+}
+
+Table AttendanceRecord {
+  id Int [pk, increment]
+  employeeId Int [not null]
+  employee Employee [not null]
+  checkIn DateTime [not null]
+  checkOut DateTime
+  status AttendanceStatus [not null, default: 'present']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table LeaveRequest {
+  id Int [pk, increment]
+  employeeId Int [not null]
+  employee Employee [not null]
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  type LeaveType [not null]
+  status LeaveStatus [not null, default: 'pending']
+  reason String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Settings {
+  id Int [pk, default: 1]
+  companyName String [not null]
+  companyAddress String [not null]
+  companyContact String [not null]
+  companyTaxId String [not null]
+  payrollCurrency String [not null, default: 'USD']
+  payrollPayday Int [not null, default: 15]
+  payrollOvertimeRate Float [not null, default: 1.5]
+  leaveAnnualDays Int [not null, default: 20]
+  leaveSickDays Int [not null, default: 10]
+  leaveCarryForward Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Department {
+  id Int [pk, increment]
+  name String [not null]
+  parentDepartmentId Int
+  parentDepartment Department
+  childDepartments Department [not null]
+  teams Team [not null]
+}
+
+Table Team {
+  id Int [pk, increment]
+  name String [not null]
+  departmentId Int [not null]
+  department Department [not null]
+}
+
+Table SalaryStructure {
+  id Int [pk, increment]
+  name String [not null]
+  effectiveFrom DateTime [not null]
+  monthlyCompensation Float [not null]
+  yearlyCompensation Float [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  components StructureComponent [not null]
+  employeeSalaryStructures EmployeeSalaryStructure [not null]
+}
+
+Table PayComponent {
+  id Int [pk, increment]
+  name String [not null]
+  category PayComponentCategory [not null, default: 'earning']
+  calculationType PayComponentCalculationType [not null, default: 'fixed']
+  amount Float [not null]
+  formula String
+  baseComponentId Int
+  isStatutory Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  baseComponent PayComponent
+  childComponent PayComponent [not null]
+  structureComponents StructureComponent [not null]
+  PayrollEntry PayrollEntry [not null]
+}
+
+Table StructureComponent {
+  id Int [pk, increment]
+  salaryStructureId Int [not null]
+  payComponentId Int [not null]
+  calculatedAmount Float [not null]
+  amountOverride Float
+  formulaOverride String
+  payComponent PayComponent [not null]
+  salaryStructure SalaryStructure [not null]
+}
+
+Table EmployeeSalaryStructure {
+  id Int [pk, increment]
+  employeeId Int [not null]
+  salaryStructureId Int [not null]
+  employee Employee [not null]
+  salaryStructure SalaryStructure [not null]
+}
+
+Enum PayComponentCalculationType {
+  fixed
+  percentage
+  formula
+}
+
+Enum PayComponentCategory {
+  earning
+  deduction
+  reimbursement
+}
+
+Enum PayrollRunStatus {
+  draft
+  calculated
+  approved
+  paid
+}
+
+Enum PayrollStatus {
+  pending
+  paid
+  failed
+}
+
+Enum AttendanceStatus {
+  present
+  absent
+  late
+  half_day
+}
+
+Enum LeaveType {
+  annual
+  sick
+  maternity
+  paternity
+  unpaid
+  personal
+}
+
+Enum LeaveStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}
+
+Ref: EmployeeBankAccount.employeeId > Employee.id
+
+Ref: EmployeeEmergencyContact.employeeId > Employee.id
+
+Ref: PayrollRecord.payrollRunId > PayrollRun.id
+
+Ref: PayrollRecord.employeeId > Employee.id
+
+Ref: PayrollEntry.payrollRecordId > PayrollRecord.id
+
+Ref: PayrollEntry.componentId > PayComponent.id
+
+Ref: AttendanceRecord.employeeId > Employee.id
+
+Ref: LeaveRequest.employeeId > Employee.id
+
+Ref: Department.parentDepartmentId - Department.id
+
+Ref: Team.departmentId > Department.id
+
+Ref: PayComponent.baseComponentId - PayComponent.id
+
+Ref: StructureComponent.payComponentId > PayComponent.id
+
+Ref: StructureComponent.salaryStructureId > SalaryStructure.id
+
+Ref: EmployeeSalaryStructure.employeeId > Employee.id
+
+Ref: EmployeeSalaryStructure.salaryStructureId > SalaryStructure.id
