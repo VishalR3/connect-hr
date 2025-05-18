@@ -29,7 +29,6 @@ export default function Compensation() {
       const index = compensations.findIndex((compensation) =>
         dayjs().isAfter(compensation.salaryStructure.effectiveFrom)
       );
-      console.log(index);
       setActiveCompensation(index);
     }
   }, [compensations]);

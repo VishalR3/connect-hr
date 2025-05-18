@@ -99,11 +99,11 @@ model PayrollRecord {
 }
 
 model PayrollEntry {
-  id              Int           @id @default(autoincrement())
+  id              Int                   @id @default(autoincrement())
   payrollRecordId Int
-  payrollRecord   PayrollRecord @relation(fields: [payrollRecordId], references: [id])
+  payrollRecord   PayrollRecord         @relation(fields: [payrollRecordId], references: [id])
   componentId     Int?
-  component       PayComponent? @relation(fields: [componentId], references: [id])
+  component       PayComponent?         @relation(fields: [componentId], references: [id])
   componentName   String
   amount          Float
   type            PayComponentCategory?
@@ -265,4 +265,116 @@ enum LeaveStatus {
   approved
   rejected
   cancelled
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+
+  role       String?
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime?
+
+  members     Member[]
+  invitations Invitation[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  activeOrganizationId String?
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Organization {
+  id          String       @id
+  name        String
+  slug        String?
+  logo        String?
+  createdAt   DateTime
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String
+  createdAt      DateTime
+
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@map("invitation")
 }

@@ -197,6 +197,97 @@ Table EmployeeSalaryStructure {
   salaryStructure SalaryStructure [not null]
 }
 
+Table user {
+  id String [pk]
+  name String [not null]
+  email String [unique, not null]
+  emailVerified Boolean [not null]
+  image String
+  createdAt DateTime [not null]
+  updatedAt DateTime [not null]
+  sessions session [not null]
+  accounts account [not null]
+  role String
+  banned Boolean
+  banReason String
+  banExpires DateTime
+  members member [not null]
+  invitations invitation [not null]
+}
+
+Table session {
+  id String [pk]
+  expiresAt DateTime [not null]
+  token String [unique, not null]
+  createdAt DateTime [not null]
+  updatedAt DateTime [not null]
+  ipAddress String
+  userAgent String
+  userId String [not null]
+  user user [not null]
+  impersonatedBy String
+  activeOrganizationId String
+}
+
+Table account {
+  id String [pk]
+  accountId String [not null]
+  providerId String [not null]
+  userId String [not null]
+  user user [not null]
+  accessToken String
+  refreshToken String
+  idToken String
+  accessTokenExpiresAt DateTime
+  refreshTokenExpiresAt DateTime
+  scope String
+  password String
+  createdAt DateTime [not null]
+  updatedAt DateTime [not null]
+}
+
+Table verification {
+  id String [pk]
+  identifier String [not null]
+  value String [not null]
+  expiresAt DateTime [not null]
+  createdAt DateTime
+  updatedAt DateTime
+}
+
+Table organization {
+  id String [pk]
+  name String [not null]
+  slug String [unique]
+  logo String
+  createdAt DateTime [not null]
+  metadata String
+  members member [not null]
+  invitations invitation [not null]
+}
+
+Table member {
+  id String [pk]
+  organizationId String [not null]
+  organization organization [not null]
+  userId String [not null]
+  user user [not null]
+  role String [not null]
+  createdAt DateTime [not null]
+}
+
+Table invitation {
+  id String [pk]
+  organizationId String [not null]
+  organization organization [not null]
+  email String [not null]
+  role String
+  status String [not null]
+  expiresAt DateTime [not null]
+  inviterId String [not null]
+  user user [not null]
+}
+
 Enum PayComponentCalculationType {
   fixed
   percentage
@@ -274,3 +365,15 @@ Ref: StructureComponent.salaryStructureId > SalaryStructure.id
 Ref: EmployeeSalaryStructure.employeeId > Employee.id
 
 Ref: EmployeeSalaryStructure.salaryStructureId > SalaryStructure.id
+
+Ref: session.userId > user.id [delete: Cascade]
+
+Ref: account.userId > user.id [delete: Cascade]
+
+Ref: member.organizationId > organization.id [delete: Cascade]
+
+Ref: member.userId > user.id [delete: Cascade]
+
+Ref: invitation.organizationId > organization.id [delete: Cascade]
+
+Ref: invitation.inviterId > user.id [delete: Cascade]
