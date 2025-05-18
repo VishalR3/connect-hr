@@ -1,11 +1,11 @@
 import { DataTableColumnHeader } from "@/app/common/tanstack-table/DataTableColumnHeader";
 import EmployeeNameCell from "@/app/employees/employee-table/EmployeeNameCell";
+import { EmployeeWithDetails } from "@/app/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatIndianCurrency } from "@/utils/utils";
-import { Employee } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<Employee>[] = [
+export const columns: ColumnDef<EmployeeWithDetails>[] = [
   {
     id: "select",
     header: ({ table }) => (

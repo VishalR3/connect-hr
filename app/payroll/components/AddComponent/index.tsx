@@ -38,7 +38,7 @@ export default function AddComponent() {
   } = useGetPayComponentsQuery();
   const [createComponent] = useCreatePayComponentMutation();
 
-  const watchCalculationType: PayComponentCalculationType =
+  const watchCalculationType: PayComponentCalculationType | any =
     watch("calculationType");
 
   const addComponent = async (data) => {

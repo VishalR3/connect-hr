@@ -1,15 +1,6 @@
-import { PayrollRun } from "@prisma/client";
+import { PayrollRecord, PayrollRun } from "@prisma/client";
 import { apiService } from "./apiService";
-
-export interface PayrollRecord {
-  id: number;
-  employeeId: number;
-  salary: number;
-  bonus: number;
-  deductions: number;
-  paymentDate: string;
-  status: "paid" | "pending" | "failed";
-}
+import { PayrunWithDetails } from "@/app/types";
 
 export const payrollApi = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -21,11 +12,11 @@ export const payrollApi = apiService.injectEndpoints({
       query: () => "payrun/all",
       providesTags: ["Payrun"],
     }),
-    getPayrollRun: builder.query<PayrollRun, number>({
+    getPayrollRun: builder.query<PayrunWithDetails, number>({
       query: (id) => `payrun/${id}`,
       providesTags: (result, error, id) => [{ type: "Payrun", id }],
     }),
-    getPayrollRecord: builder.query<PayrollRecord, number>({
+    getPayrollRecord: builder.query<PayrunWithDetails, number>({
       query: (id) => `payroll/${id}`,
       providesTags: (result, error, id) => [{ type: "Payroll", id }],
     }),

@@ -2,8 +2,8 @@
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { useGetPayComponentsQuery } from "@/lib/api/payComponentApi";
-import { PayComponent } from "@prisma/client";
 import LoadingSuspense from "@/app/common/LoadingSuspense/LoadingSuspense";
+import { EmployeeComponent } from "@/app/types";
 
 export default function ComponentTable() {
   const {
@@ -16,7 +16,7 @@ export default function ComponentTable() {
       <LoadingSuspense isLoading={isLoading} isError={isError}>
         <DataTable
           columns={columns}
-          data={payComponents as PayComponent[]}
+          data={payComponents as EmployeeComponent[]}
           sx={{
             "--header-bg-color": "whitesmoke",
           }}

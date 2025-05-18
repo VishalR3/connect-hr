@@ -1,9 +1,10 @@
 import { PayComponent } from "@prisma/client";
 import { apiService } from "./apiService";
+import { EmployeeComponent } from "@/app/types";
 
 export const payComponentApi = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    getPayComponents: builder.query<PayComponent[], void>({
+    getPayComponents: builder.query<EmployeeComponent[], void>({
       query: () => "pay-component",
       providesTags: ["PayComponent"],
     }),

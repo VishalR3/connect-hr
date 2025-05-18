@@ -33,10 +33,10 @@ export default function PayrollRun() {
           0,
         grossSalary:
           employee.salaryStructures?.[0]?.salaryStructure?.components?.reduce(
-            (total, component) =>
+            (total, component: any) =>
               total +
-              (component.payComponent.category !== "deduction"
-                ? component.calculatedAmount
+              ((component?.payComponent ?? {}).category !== "deduction"
+                ? component?.calculatedAmount
                 : 0),
             0
           ) ?? 0,

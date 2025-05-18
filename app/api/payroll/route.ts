@@ -20,33 +20,6 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const payrollRecord = await prisma.payrollRecord.create({
-      data: {
-        employeeId: body.employeeId,
-        salary: body.salary,
-        bonus: body.bonus,
-        deductions: body.deductions,
-        status: body.status,
-        paymentDate: new Date(body.paymentDate),
-      },
-      include: { employee: true },
-    });
-    return NextResponse.json(payrollRecord, { status: 201 });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        error: `Failed to create payroll record: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
-      },
-      { status: 500 }
-    );
-  }
-}
-
 export async function PUT(request: Request) {
   try {
     const { id, ...data } = await request.json();

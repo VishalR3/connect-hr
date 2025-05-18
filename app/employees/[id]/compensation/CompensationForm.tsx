@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useGetPayComponentsQuery } from "@/lib/api/payComponentApi";
 import { Box, TextField } from "@mui/material";
-import { PayComponent } from "@prisma/client";
 import { Pencil } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
@@ -15,6 +14,7 @@ import {
 } from "@/lib/api/employeesApi";
 import { useParams } from "next/navigation";
 import dayjs from "dayjs";
+import { EmployeeComponent } from "@/app/types";
 
 export default function CompensationForm({
   handleClose,
@@ -32,9 +32,9 @@ export default function CompensationForm({
   } = useGetPayComponentsQuery();
   const [createCompensation] = useCreateCompensationMutation();
 
-  const [employeeComponents, setEmployeeComponents] = useState<PayComponent[]>(
-    []
-  );
+  const [employeeComponents, setEmployeeComponents] = useState<
+    EmployeeComponent[]
+  >([]);
   const [effectiveDate, setEffectiveDate] = useState(new Date());
 
   const totalCompensation = useMemo(() => {
@@ -141,9 +141,9 @@ export function CompensationComponent({
   components,
   setComponents,
 }: {
-  component: PayComponent;
-  components: PayComponent[];
-  setComponents: React.Dispatch<React.SetStateAction<PayComponent[]>>;
+  component: EmployeeComponent;
+  components: EmployeeComponent[];
+  setComponents: React.Dispatch<React.SetStateAction<EmployeeComponent[]>>;
 }) {
   const [editing, setEditing] = useState(false);
   const [amount, setAmount] = useState(component.amount);
@@ -217,7 +217,7 @@ export function CompensationComponent({
                 Number(amount).toFixed(2) + "%"}
             </div>
             {component.calculationType === "percentage" && (
-              <div>of {component.baseComponent.name}</div>
+              <div>of {component?.baseComponent?.name}</div>
             )}
             <Pencil size={12} />
           </div>

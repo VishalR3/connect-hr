@@ -14,7 +14,7 @@ const updateEmployeeSchema = z.object({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const employee = await prisma.employee.findUnique({
@@ -40,29 +40,20 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     const validatedData = updateEmployeeSchema.parse(body);
 
     const employee = await prisma.employee.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt((await params).id) },
       data: {
         name: validatedData.name,
         email: validatedData.email,
         position: validatedData.position,
         department: validatedData.department,
         joinDate: new Date(validatedData.joinDate),
-      },
-    });
-
-    // Create a new payroll record to reflect the salary change
-    await prisma.payrollRecord.create({
-      data: {
-        employeeId: employee.id,
-        salary: validatedData.salary,
-        paymentDate: new Date(),
       },
     });
 

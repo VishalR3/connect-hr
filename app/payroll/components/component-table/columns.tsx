@@ -1,8 +1,8 @@
 "use client";
-import { PayComponent } from "@prisma/client";
+import { EmployeeComponent } from "@/app/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<PayComponent>[] = [
+export const columns: ColumnDef<EmployeeComponent>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -28,7 +28,7 @@ export const columns: ColumnDef<PayComponent>[] = [
       <div>
         {row.original.calculationType === "fixed"
           ? row.original.amount
-          : `${row.original.amount}% of ${row.original.baseComponent.name}`}
+          : `${row.original.amount}% of ${row.original.baseComponent?.name}`}
       </div>
     ),
   },
