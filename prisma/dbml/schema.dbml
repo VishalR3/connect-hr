@@ -5,6 +5,7 @@
 Table Employee {
   id Int [pk, increment]
   employeeId String
+  userId String [unique]
   name String [not null]
   email String [unique, not null]
   position String [not null]
@@ -29,6 +30,7 @@ Table Employee {
   salaryStructures EmployeeSalaryStructure [not null]
   EmployeeBankAccount EmployeeBankAccount [not null]
   EmployeeEmergencyContact EmployeeEmergencyContact [not null]
+  User user
 }
 
 Table EmployeeBankAccount {
@@ -213,6 +215,7 @@ Table user {
   banExpires DateTime
   members member [not null]
   invitations invitation [not null]
+  Employee Employee
 }
 
 Table session {
@@ -335,6 +338,8 @@ Enum LeaveStatus {
   rejected
   cancelled
 }
+
+Ref: Employee.userId - user.id
 
 Ref: EmployeeBankAccount.employeeId > Employee.id
 

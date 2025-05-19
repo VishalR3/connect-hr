@@ -21,6 +21,7 @@ datasource db {
 model Employee {
   id                       Int                        @id @default(autoincrement())
   employeeId               String?
+  userId                   String?                    @unique
   name                     String
   email                    String                     @unique
   position                 String
@@ -45,6 +46,7 @@ model Employee {
   salaryStructures         EmployeeSalaryStructure[]
   EmployeeBankAccount      EmployeeBankAccount[]
   EmployeeEmergencyContact EmployeeEmergencyContact[]
+  User                     User?                      @relation(fields: [userId], references: [id])
 }
 
 model EmployeeBankAccount {
@@ -285,6 +287,7 @@ model User {
 
   members     Member[]
   invitations Invitation[]
+  Employee    Employee?
 
   @@unique([email])
   @@map("user")
